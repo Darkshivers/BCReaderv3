@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:launchMode="singleTask"
+    android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="25dp">
+
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+
+        android:adjustViewBounds="false"
+        android:cropToPadding="false"
+        android:scaleType="centerInside"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:srcCompat="@drawable/logo"
+        tools:layout_editor_absoluteY="2dp" />
+
+    <Button
+        android:id="@+id/barcode"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
+        android:defaultFocusHighlightEnabled="false"
+        android:elevation="2dp"
+        android:text="Scan"
+        android:textAlignment="inherit"
+        android:textColor="@android:color/white"
+        android:theme="@style/Base.Widget.AppCompat.Button"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/clear" />
+
+    <Button
+        android:id="@+id/buttonsearch"
+        style="@android:style/Widget.Material.Button.Colored"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="0"
+        android:defaultFocusHighlightEnabled="false"
+        android:text="Search"
+        android:textAlignment="inherit"
+        android:textColor="@android:color/white"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+    <Button
+        android:id="@+id/btnHistory"
+        style="@android:style/Widget.Material.Button.Colored"
+        android:layout_width="140dp"
+        android:layout_height="46dp"
+        android:defaultFocusHighlightEnabled="false"
+        android:text="History"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.518"
+        android:layout_marginRight="20dp"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <Button
+        android:id="@+id/btnProdScan"
+        style="@android:style/Widget.Material.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="46dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="19dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:defaultFocusHighlightEnabled="false"
+        android:text="Scanned Prod"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@+id/clear"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/btnHistory"
+        app:layout_constraintTop_toBottomOf="@+id/buttonsearch"
+        app:layout_constraintVertical_bias="0.142" />
+
+    <TextView
+
+        android:id="@+id/physicalscan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BarcodeScan2"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        android:visibility="visible"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/barcode" />
+
+    <TextView
+
+        android:id="@+id/BarcodeResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BarcodeScan1"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        android:visibility="visible"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/physicalscan" />
+
+    <EditText
+        android:id="@+id/editphystxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:visibility="visible"
+
+        android:layout_marginBottom="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/BarcodeResult"
+        app:layout_constraintHorizontal_bias="0.503" />
+
+    <Button
+        android:id="@+id/clear"
+        style="@android:style/Widget.Material.Button.Colored"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_weight="1"
+        android:defaultFocusHighlightEnabled="false"
+        android:text="Clear"
+        android:textAlignment="inherit"
+        android:textColor="@android:color/white"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnHistory" />
+
+
+</android.support.constraint.ConstraintLayout>

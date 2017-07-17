@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">BCReaderv3</string>
+    <string name="title_activity_scanned_product">ScannedProduct</string>
+</resources>

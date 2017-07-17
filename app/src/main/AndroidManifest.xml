@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.levinm.bcreaderv3">
+
+    <application
+        android:allowBackup="true"
+        android:configChanges="keyboard"
+        android:icon="@mipmap/ic_launcher"
+        android:label="Oak Tyres Barcode Reader"
+        android:launchMode="singleTask"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
+        <uses-sdk android:minSdkVersion="6" />
+        >
+        <uses-permission android:name="android.permission.CAMERA" />
+
+        <uses-feature android:name="android.hardware.camera" />
+        <uses-feature android:name="android.hardware.camera.autofocus" />
+
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".historyactivity" />
+        <activity android:name=".ScannedProduct"></activity>
+    </application>
+
+</manifest>
