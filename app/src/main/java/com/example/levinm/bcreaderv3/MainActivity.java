@@ -59,8 +59,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-
-        //On Create
+//testpush
+// On Create
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
