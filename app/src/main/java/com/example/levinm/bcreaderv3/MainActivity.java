@@ -39,12 +39,13 @@ import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
     SharedPreferences historyshared;
-    ArrayList<String> historyitems = new ArrayList<>();
+    ArrayList<String> historyitems = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,15 +60,30 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-//testpush
 // On Create
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
-        textchangeupdate();
+
+        DBHandler db = new DBHandler(this);
+//      Log.d("insert: ","Inserting.. " );
+//      db.insert(this);
+//
+//      Log.d("READING: ", "Reading all Products");
+
+
+        List<Product> product = db.getAllProducts();
+
+        for (Product product1 : product) {
+            String log = "id: " + product1.getId() + ", Name: " + product1.getName() + " , Barcode: " + product1.getBarCode();
+
+            Log.d("Shop::", log);
+        }
+
         assignbuttons("");
+        textchangeupdate();
         historyshared = getSharedPreferences("Historyshared", MODE_PRIVATE);
-        retreivevalues();
+        //retreivevalues();
 
     }
 
@@ -113,7 +129,14 @@ public class MainActivity extends AppCompatActivity {
 
                 TextView DigitalBarcoderesults = (TextView) findViewById(R.id.BarcodeResult);
                 Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
-                DigitalBarcoderesults.setText("Barcode Result: " + result.getContents());
+
+                DBHandler db = new DBHandler(MainActivity.this);
+
+                String barcode = result.getContents();
+                Product product = db.getProduct(barcode);
+                DigitalBarcoderesults.setText(product.getName());
+
+
 
                 historyitems.add(result.getContents());
             }
@@ -124,6 +147,8 @@ public class MainActivity extends AppCompatActivity {
         String barcode = result.getContents();
         assignbuttons(barcode);
 
+
+
     }
 
 
@@ -133,10 +158,18 @@ public class MainActivity extends AppCompatActivity {
         final EditText PhysicalBarcode = (EditText) findViewById(R.id.editphystxt);
         final TextView physicalText = (TextView) findViewById(R.id.physicalscan);
 
+        final DBHandler db = new DBHandler(this);
+
         TextWatcher inputTextWatcher = new TextWatcher() {
             public void afterTextChanged(Editable s) {
                 String Str = PhysicalBarcode.getText().toString();
-                physicalText.setText(Str);
+                if (Str.length() >= 13){
+
+                    Product product = db.getProduct(Str);
+                    physicalText.setText(product.getName());
+                    PhysicalBarcode.setText("");
+                }
+
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after){
             }
