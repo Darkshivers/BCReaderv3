@@ -11,7 +11,6 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
-
 package com.example.levinm.bcreaderv3;
 
 import android.Manifest;
@@ -39,168 +38,160 @@ import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
-    SharedPreferences historyshared;
-    ArrayList<String> historyitems = new ArrayList<String>();
+    SharedPreferences historyshared ;
+    ArrayList < String > historyitems = new ArrayList <String> ();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        ProductPoll query = new ProductPoll();
 
+        //Requests permissions to use camera for new versions of android
         int MY_PERMISSION_REQUEST_CAMERA = 0;
         if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.CAMERA)) {
                 initiateintegrator();
             } else {
-                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, MY_PERMISSION_REQUEST_CAMERA);
+                ActivityCompat.requestPermissions(MainActivity.this, new String[] {
+                        Manifest.permission.CAMERA
+                }, MY_PERMISSION_REQUEST_CAMERA);
             }
         }
 
-// On Create
+        // On Create
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
-
-        DBHandler db = new DBHandler(this);
-//      Log.d("insert: ","Inserting.. " );
-//      db.insert(this);
-//
-//      Log.d("READING: ", "Reading all Products");
+        query.getProducts(MainActivity.this);
 
 
-        List<Product> product = db.getAllProducts();
-
-        for (Product product1 : product) {
-            String log = "id: " + product1.getId() + ", Name: " + product1.getName() + " , Barcode: " + product1.getBarCode();
-
-            Log.d("Shop::", log);
-        }
-
+        //Calls Buttons method
         assignbuttons("");
+
+        //Call Text change method
         textchangeupdate();
-        historyshared = getSharedPreferences("Historyshared", MODE_PRIVATE);
-        //retreivevalues();
+
+        //Sets shared preferences
+        historyshared = getSharedPreferences("Historyshared", MainActivity.MODE_PRIVATE);
+
 
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        saveData();
-
-    }
-
-    @Override
+    //Keeps hold of data when application is updated
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         historyitems = savedInstanceState.getStringArrayList("History");
         super.onRestoreInstanceState(savedInstanceState);
     }
 
+    //Saves scanned bar codes
     private void saveData() {
 
         SharedPreferences.Editor edit = historyshared.edit();
-        Set<String> set = new HashSet<>();
+        Set < String > set = new HashSet < > ();
         set.addAll(historyitems);
         edit.putStringSet("History Items", set);
         edit.apply();
-        Log.d("Stored Preferences set", "" +set);
+        Log.d("Stored Preferences set", "" + set);
     }
 
-    private void retreivevalues(){
+    //Recieves scanned barcodes from saved preferences
+    private void retreivevalues() {
 
-        Set <String> set = historyshared.getStringSet("History Items", null);
+        Set < String > set = historyshared.getStringSet("History Items", null);
         historyitems.addAll(set);
-
 
     }
 
     @Override
+    //Once ZXing has returned back to MainActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
+            //Checks if the user has scanned any product
             if (result.getContents() == null) {
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
             } else {
-
+                //Scanned product and stores it within textview
                 TextView DigitalBarcoderesults = (TextView) findViewById(R.id.BarcodeResult);
                 Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
 
+                //Being DB Conn
                 DBHandler db = new DBHandler(MainActivity.this);
 
                 String barcode = result.getContents();
                 Product product = db.getProduct(barcode);
                 DigitalBarcoderesults.setText(product.getName());
 
-
-
-                historyitems.add(result.getContents());
+                historyitems.add(barcode);
+                saveData();
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
-
+        //Sets barcode result and stores it into a string
         String barcode = result.getContents();
+
+        //sends barcode to button for when pressed
         assignbuttons(barcode);
-
-
-
     }
 
 
     //Check text box for text updates reference DB
     public void textchangeupdate() {
 
+        //Gained from physical barcode
         final EditText PhysicalBarcode = (EditText) findViewById(R.id.editphystxt);
+
+        //Stores product name
         final TextView physicalText = (TextView) findViewById(R.id.physicalscan);
 
+        //Init DBase
         final DBHandler db = new DBHandler(this);
 
+        //update text with barcode name
         TextWatcher inputTextWatcher = new TextWatcher() {
             public void afterTextChanged(Editable s) {
                 String Str = PhysicalBarcode.getText().toString();
-                if (Str.length() >= 13){
-
+                if (Str.length() >= 13) {
                     Product product = db.getProduct(Str);
                     physicalText.setText(product.getName());
                     PhysicalBarcode.setText("");
                 }
 
             }
-            public void beforeTextChanged(CharSequence s, int start, int count, int after){
-            }
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
         };
+
+        //Assigns text listener to button
         PhysicalBarcode.addTextChangedListener(inputTextWatcher);
     }
 
     //Assign buttons to switches
     public void assignbuttons(String barcode) {
 
+        //Button inits
+        final TextView BarcodeText = (TextView) findViewById(R.id.BarcodeResult); //    Textview for barcode
+        Button search = (Button) findViewById(R.id.buttonsearch); // Search the internet
+        Button history = (Button) findViewById(R.id.btnHistory); //Check barcode scan history
+        Button scannedbc = (Button) findViewById(R.id.btnProdScan); //The same ^
+        Button button = (Button) findViewById(R.id.clear); //Clear barcode scans, prevents searching
+
         final String searchedbarcode = barcode;
         Button clear = (Button) findViewById(R.id.barcode);
         clear.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                int MY_PERMISSION_REQUEST_CAMERA = 0;
                 initiateintegrator();
-                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.CAMERA)) {
-                        initiateintegrator();
-                    } else {
-                        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, MY_PERMISSION_REQUEST_CAMERA);
-                    }
-                }
 
             }
         });
 
-        final TextView BarcodeText = (TextView) findViewById(R.id.BarcodeResult);
-        Button button = (Button) findViewById(R.id.clear);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 BarcodeText.setText("");
@@ -208,8 +199,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        Button search = (Button) findViewById(R.id.buttonsearch);
         search.setOnClickListener(new View.OnClickListener() {
             public void onClick(View V) {
 
@@ -224,29 +213,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        Button history = (Button) findViewById(R.id.btnHistory);
         history.setOnClickListener(new View.OnClickListener() {
             public void onClick(View V) {
-
-                    saveData();
-                    Intent intent = new Intent(MainActivity.this, historyactivity.class);
-                    intent.putStringArrayListExtra("key" , historyitems);
-                    startActivity(intent);
+                Intent intent = new Intent(MainActivity.this, historyactivity.class);
+                intent.putStringArrayListExtra("key", historyitems);
+                startActivity(intent);
             }
         });
 
-
-        Button scannedbc = (Button) findViewById(R.id.btnProdScan);
         scannedbc.setOnClickListener(new View.OnClickListener() {
             public void onClick(View V) {
                 Intent intent = new Intent(MainActivity.this, ScannedProduct.class);
                 startActivity(intent);
             }
         });
-
-
-
     }
 
     public void initiateintegrator() {
@@ -283,50 +263,7 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
     }
 }
-    //        switch (event.getKeyCode()) {
-//
-//            case KeyEvent.KEYCODE_0:
-//                MyDigits.add(0);
-//                break;
-//
-//            case KeyEvent.KEYCODE_1:
-//                MyDigits.add(1);
-//                break;
-//
-//            case KeyEvent.KEYCODE_2:
-//                MyDigits.add(2);
-//                break;
-//
-//            case KeyEvent.KEYCODE_3:
-//                MyDigits.add(3);
-//                break;
-//
-//            case KeyEvent.KEYCODE_4:
-//                MyDigits.add(4);
-//                break;
-//
-//            case KeyEvent.KEYCODE_5:
-//                MyDigits.add(5);
-//                break;
-//
-//            case KeyEvent.KEYCODE_6:
-//                MyDigits.add(6);
-//                break;
-//
-//            case KeyEvent.KEYCODE_7:
-//                MyDigits.add(7);
-//                break;
-//
-//            case KeyEvent.KEYCODE_8:
-//                MyDigits.add(8);
-//                break;
-//
-//            case KeyEvent.KEYCODE_9:
-//                MyDigits.add(9);
-//                break;
-//
-//
-//        }
+
 
 
 

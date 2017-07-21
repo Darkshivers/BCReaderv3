@@ -21,9 +21,11 @@ import java.util.List;
 
 public class DBHandler extends SQLiteOpenHelper {
 
-
+    //Database information
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "FeedReader.db";
+
+    //Table Name
     private static final String TABLE = "Product";
 
 
@@ -31,9 +33,7 @@ public class DBHandler extends SQLiteOpenHelper {
     public static final String KEY_ID = "id";
     public static final String KEY_Product = "ProductName";
     public static final String Key_ProductBarcode = "barcode";
-
-
-    //Table Name
+    public static final String Key_Brand = "brand";
 
 
     public DBHandler(Context context) {
@@ -42,19 +42,21 @@ public class DBHandler extends SQLiteOpenHelper {
 
 
 
+
     @Override
     public void onCreate(SQLiteDatabase db) {
 
         Log.d("creating: ","Inserting.. " );
 
-
+        //Database creation query
         String CREATE_TABLE_PRODUCTS = "CREATE TABLE " + TABLE + " (" +
                 KEY_ID + " TEXT PRIMARY KEY," +
                 KEY_Product + " TEXT," +
-                Key_ProductBarcode + " TEXT)";
+                Key_ProductBarcode + " TEXT," +
+                Key_Brand + " TEXT)";
 
 
-        db.execSQL(CREATE_TABLE_PRODUCTS);
+        db.execSQL(CREATE_TABLE_PRODUCTS); //Exec query
 
 
     }
@@ -69,12 +71,13 @@ public class DBHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    //Inserts products into DB when called
     public void insert(Context context){
 
 
-        SQLiteDatabase db = getWritableDatabase();
+        SQLiteDatabase db = getWritableDatabase(); //Grab editiable database
 
-        String mCSVfile = "csvfile.csv";
+        String mCSVfile = "csvfile.csv"; //Sets name of CSV file
         AssetManager manager = context.getAssets();
         InputStream inStream = null;
         try {
@@ -88,6 +91,7 @@ public class DBHandler extends SQLiteOpenHelper {
         db.beginTransaction();
 
         try {
+            //Prevents errors
             while ((line = buffer.readLine()) != null) {
                 String[] columns = line.split(",");
                 if (columns.length < 1) {
@@ -99,6 +103,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 values.put(KEY_ID, columns[0].trim());
                 values.put(Key_ProductBarcode, columns[1].trim());
                 values.put(KEY_Product, columns[2].trim());
+                values.put(Key_Brand, columns[3].trim());
                 db.insert(this.TABLE, null, values);
 
             }
@@ -108,7 +113,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
         db.setTransactionSuccessful();
         db.endTransaction();
-        db.close();
+        db.close(); //Close DB
 
     }
 
@@ -127,6 +132,8 @@ public class DBHandler extends SQLiteOpenHelper {
                 product.setId((cursor.getString(0)));
                 product.setName(cursor.getString(1));
                 product.setBarcode(cursor.getString(2));
+                product.setBrand(cursor.getString(3));
+
 
                 productlist.add(product);
 
@@ -141,22 +148,19 @@ public class DBHandler extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE, new String[]{KEY_ID, Key_ProductBarcode,
-                KEY_Product}, Key_ProductBarcode + "=?", new String[]{barcode}, null, null, null, null);
+                KEY_Product, Key_Brand}, Key_ProductBarcode + "=?", new String[]{barcode}, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
-
-
-        Product contact = new Product(cursor.getString(0), cursor.getString(2), cursor.getString(1));
+        Product contact = new Product(cursor.getString(0), cursor.getString(2), cursor.getString(1), cursor.getString(3));
         if (contact == null){
-
             return null;
         }
-
         else {
             return contact;
         }
 
     }
+
 
 
 }

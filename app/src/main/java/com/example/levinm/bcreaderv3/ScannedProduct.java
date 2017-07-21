@@ -22,6 +22,7 @@ public class ScannedProduct extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scanned_product);
 
+
         lvProduct=(ListView) findViewById(R.id.lvProduct);
         lvProduct.setAdapter(new CustomAdapter(this, wheelnamelist, wheelimages));
         lvProduct.setDivider(null);
