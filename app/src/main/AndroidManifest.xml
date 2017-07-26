@@ -25,11 +25,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".historyactivity"
-            />
-        <activity android:name=".ScannedProduct">
-
-        </activity>
+        <activity android:name=".historyactivity" />
+        <activity android:name=".ScannedProduct"></activity>
+        <activity android:name=".ProductScan"></activity>
     </application>
 
 </manifest>

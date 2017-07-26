@@ -45,10 +45,11 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences historyshared ;
     ArrayList < String > historyitems = new ArrayList <String> ();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        ProductPoll query = new ProductPoll();
+        ProductPoll query = new ProductPoll(); //New instance of ProductPoll class
 
         //Requests permissions to use camera for new versions of android
         int MY_PERMISSION_REQUEST_CAMERA = 0;
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
-        query.getProducts(MainActivity.this);
+        //query.getProducts(MainActivity.this);
 
 
         //Calls Buttons method
@@ -77,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
 
         //Sets shared preferences
         historyshared = getSharedPreferences("Historyshared", MainActivity.MODE_PRIVATE);
+
+        //Retrieve Preference Values
+        retreivevalues();
 
 
     }
@@ -101,10 +105,8 @@ public class MainActivity extends AppCompatActivity {
 
     //Recieves scanned barcodes from saved preferences
     private void retreivevalues() {
-
         Set < String > set = historyshared.getStringSet("History Items", null);
         historyitems.addAll(set);
-
     }
 
     @Override
@@ -118,8 +120,8 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
             } else {
                 //Scanned product and stores it within textview
-                TextView DigitalBarcoderesults = (TextView) findViewById(R.id.BarcodeResult);
                 Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+                TextView DigitalBarcoderesults = (TextView) findViewById(R.id.BarcodeResult);
 
                 //Being DB Conn
                 DBHandler db = new DBHandler(MainActivity.this);
@@ -169,12 +171,19 @@ public class MainActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
         };
 
-        //Assigns text listener to button
+        //Assigns text listener to EditText
         PhysicalBarcode.addTextChangedListener(inputTextWatcher);
     }
 
+
+    public void showScan(){
+
+
+
+    }
+
     //Assign buttons to switches
-    public void assignbuttons(String barcode) {
+    public void assignbuttons(final String barcode) {
 
         //Button inits
         final TextView BarcodeText = (TextView) findViewById(R.id.BarcodeResult); //    Textview for barcode
@@ -182,8 +191,44 @@ public class MainActivity extends AppCompatActivity {
         Button history = (Button) findViewById(R.id.btnHistory); //Check barcode scan history
         Button scannedbc = (Button) findViewById(R.id.btnProdScan); //The same ^
         Button button = (Button) findViewById(R.id.clear); //Clear barcode scans, prevents searching
+        Button debugTest = (Button) findViewById(R.id.btnDebug); //Debug button
 
+        final String bc = barcode;
         final String searchedbarcode = barcode;
+
+        debugTest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                TextView DigitalBarcoderesults = (TextView) findViewById(R.id.BarcodeResult);
+                DBHandler db = new DBHandler(MainActivity.this);
+
+                if (barcode == "") { //Avon
+                    Product product = db.getProduct("29142485506");
+                    DigitalBarcoderesults.setText(product.getName());
+                    assignbuttons("29142485506");
+                    return;
+
+                }
+
+                if (barcode == "29142485506") { //  Davanti
+                    Product product = db.getProduct("5060408160299");
+                    DigitalBarcoderesults.setText(product.getName());
+                    assignbuttons("5060408160299");
+                    return;
+
+                }
+
+                if (barcode == "5060408160299") { // Evergreen
+                    Product product = db.getProduct("69222504404882");
+                    DigitalBarcoderesults.setText(product.getName());
+                    assignbuttons(null);
+                    return;
+                }
+            }
+        });
+
+
         Button clear = (Button) findViewById(R.id.barcode);
         clear.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -191,6 +236,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
 
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -215,6 +261,7 @@ public class MainActivity extends AppCompatActivity {
 
         history.setOnClickListener(new View.OnClickListener() {
             public void onClick(View V) {
+
                 Intent intent = new Intent(MainActivity.this, historyactivity.class);
                 intent.putStringArrayListExtra("key", historyitems);
                 startActivity(intent);
@@ -223,7 +270,8 @@ public class MainActivity extends AppCompatActivity {
 
         scannedbc.setOnClickListener(new View.OnClickListener() {
             public void onClick(View V) {
-                Intent intent = new Intent(MainActivity.this, ScannedProduct.class);
+                Intent intent = new Intent(MainActivity.this, ProductScan.class);
+                intent.putExtra("Barcode", bc);
                 startActivity(intent);
             }
         });

@@ -62,8 +62,6 @@ public class historyactivity extends AppCompatActivity {
         });
     }
 
-
-
     private class StableArrayAdapter extends ArrayAdapter<String> {
 
         HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();

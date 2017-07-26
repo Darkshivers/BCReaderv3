@@ -29,7 +29,7 @@ public class DBHandler extends SQLiteOpenHelper {
     private static final String TABLE = "Product";
 
 
-    //Table Column Names
+    //Product Table Column Names
     public static final String KEY_ID = "id";
     public static final String KEY_Product = "ProductName";
     public static final String Key_ProductBarcode = "barcode";
@@ -55,10 +55,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 Key_ProductBarcode + " TEXT," +
                 Key_Brand + " TEXT)";
 
-
         db.execSQL(CREATE_TABLE_PRODUCTS); //Exec query
-
-
     }
 
     @Override
@@ -113,7 +110,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
         db.setTransactionSuccessful();
         db.endTransaction();
-        db.close(); //Close DB
+        db.close();
 
     }
 
