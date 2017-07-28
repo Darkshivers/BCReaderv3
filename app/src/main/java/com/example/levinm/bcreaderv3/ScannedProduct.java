@@ -14,8 +14,6 @@ public class ScannedProduct extends AppCompatActivity {
     Context context;
     ArrayList wheelname;
 
-
-
     public static int[] wheelimages= {R.drawable.davanti, R.drawable.evergreen};
     public static String[] wheelnamelist={"Davanti", "Evergreen"};
 

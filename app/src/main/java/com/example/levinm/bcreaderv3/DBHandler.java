@@ -27,6 +27,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
     //Table Name
     private static final String TABLE = "Product";
+    private static final String PRICE_TABLE = "Price";
 
 
     //Product Table Column Names
@@ -35,13 +36,16 @@ public class DBHandler extends SQLiteOpenHelper {
     public static final String Key_ProductBarcode = "barcode";
     public static final String Key_Brand = "brand";
 
+    //Price table
+
+    public static final String Key_Price_ID = "id";
+    public static final String KEY_price = "price";
+
+
 
     public DBHandler(Context context) {
         super(context, DATABASE_NAME, null , DATABASE_VERSION);
     }
-
-
-
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -55,7 +59,13 @@ public class DBHandler extends SQLiteOpenHelper {
                 Key_ProductBarcode + " TEXT," +
                 Key_Brand + " TEXT)";
 
-        db.execSQL(CREATE_TABLE_PRODUCTS); //Exec query
+        String CREATE_TABLE_PRICE = "CREATE TABLE " + PRICE_TABLE + " (" +
+                Key_Price_ID + "TEXT PRIMARY KEY," +
+                KEY_price + " TEXT";
+
+
+        db.execSQL(CREATE_TABLE_PRODUCTS); //Exec products query
+
     }
 
     @Override
@@ -69,12 +79,11 @@ public class DBHandler extends SQLiteOpenHelper {
     }
 
     //Inserts products into DB when called
-    public void insert(Context context){
-
+    public void insert(Context context, String csv){
 
         SQLiteDatabase db = getWritableDatabase(); //Grab editiable database
 
-        String mCSVfile = "csvfile.csv"; //Sets name of CSV file
+        String mCSVfile = csv; //Sets name of CSV file
         AssetManager manager = context.getAssets();
         InputStream inStream = null;
         try {
@@ -84,7 +93,7 @@ public class DBHandler extends SQLiteOpenHelper {
         }
 
         BufferedReader buffer = new BufferedReader(new InputStreamReader(inStream));
-        String line = "";
+        String line;
         db.beginTransaction();
 
         try {
@@ -111,7 +120,6 @@ public class DBHandler extends SQLiteOpenHelper {
         db.setTransactionSuccessful();
         db.endTransaction();
         db.close();
-
     }
 
     public List<Product> getAllProducts(){
@@ -125,12 +133,12 @@ public class DBHandler extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             do {
+
                 Product product = new Product();
                 product.setId((cursor.getString(0)));
                 product.setName(cursor.getString(1));
                 product.setBarcode(cursor.getString(2));
                 product.setBrand(cursor.getString(3));
-
 
                 productlist.add(product);
 

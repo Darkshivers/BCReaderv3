@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        ProductPoll query = new ProductPoll(); //New instance of ProductPoll class
+        DBChecker check = new DBChecker();
 
         //Requests permissions to use camera for new versions of android
         int MY_PERMISSION_REQUEST_CAMERA = 0;
@@ -67,20 +67,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
-        //query.getProducts(MainActivity.this);
 
+        check.doesDBExist(this, "csvfile.csv"); //Check Database Exists and create Products table
 
-        //Calls Buttons method
-        assignbuttons("");
+        assignbuttons(""); //Calls Buttons method
 
-        //Call Text change method
-        textchangeupdate();
+        textchangeupdate(); //Call Text change method
 
-        //Sets shared preferences
-        historyshared = getSharedPreferences("Historyshared", MainActivity.MODE_PRIVATE);
+        historyshared = getSharedPreferences("Historyshared", MainActivity.MODE_PRIVATE); //Sets shared preferences
 
-        //Retrieve Preference Values
-        retreivevalues();
+        retreivevalues(); //Retrieve Preference Values
 
 
     }
@@ -173,13 +169,6 @@ public class MainActivity extends AppCompatActivity {
 
         //Assigns text listener to EditText
         PhysicalBarcode.addTextChangedListener(inputTextWatcher);
-    }
-
-
-    public void showScan(){
-
-
-
     }
 
     //Assign buttons to switches

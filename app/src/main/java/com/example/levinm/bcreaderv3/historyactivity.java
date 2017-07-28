@@ -24,7 +24,6 @@ public class historyactivity extends AppCompatActivity {
 
         final ListView listview = (ListView) findViewById(R.id.lvhistory);
 
-
         MainActivity mainActivity;
         mainActivity = new MainActivity();
         Intent i = getIntent();
