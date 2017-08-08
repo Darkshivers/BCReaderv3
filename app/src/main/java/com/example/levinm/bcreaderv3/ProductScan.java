@@ -1,5 +1,6 @@
 package com.example.levinm.bcreaderv3;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
@@ -15,15 +16,22 @@ public class ProductScan extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         String bc = extras.getString("Barcode");
         DBHandler dbhandler = new DBHandler(this);
-        Product product =  dbhandler.getProduct(bc);
 
-        TextView name = (TextView) findViewById(R.id.tvprodname);
+        if (bc.length() <= 1) {
+            Intent intent = new Intent(ProductScan.this, MainActivity.class);
+            startActivity(intent);
+            return;
+        }
 
-        name.setText(product.getName());
+        else {
+            Product product =  dbhandler.getProduct(bc);
+            TextView name = (TextView) findViewById(R.id.tvprodname);
 
-        checkbrand(product.getBrand());
+            name.setText(product.getName());
+            checkbrand(product.getBrand());
+        }
 
- ;
+
 
     }
 

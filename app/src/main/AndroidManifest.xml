@@ -27,7 +27,10 @@
         </activity>
         <activity android:name=".historyactivity" />
         <activity android:name=".ScannedProduct"></activity>
-        <activity android:name=".ProductScan"></activity>
+        <activity
+            android:name=".ProductScan"
+            android:theme="@style/Theme.AppCompat.Light.Dialog.MinWidth"></activity>
+        <activity android:name=".LoginActivity"></activity>
     </application>
 
 </manifest>

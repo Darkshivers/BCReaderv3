@@ -41,8 +41,6 @@ public class DBHandler extends SQLiteOpenHelper {
     public static final String Key_Price_ID = "id";
     public static final String KEY_price = "price";
 
-
-
     public DBHandler(Context context) {
         super(context, DATABASE_NAME, null , DATABASE_VERSION);
     }
@@ -62,7 +60,6 @@ public class DBHandler extends SQLiteOpenHelper {
         String CREATE_TABLE_PRICE = "CREATE TABLE " + PRICE_TABLE + " (" +
                 Key_Price_ID + "TEXT PRIMARY KEY," +
                 KEY_price + " TEXT";
-
 
         db.execSQL(CREATE_TABLE_PRODUCTS); //Exec products query
 
@@ -124,7 +121,6 @@ public class DBHandler extends SQLiteOpenHelper {
 
     public List<Product> getAllProducts(){
 
-
         List<Product> productlist = new ArrayList<Product>();
         String Select = "SELECT * FROM " + TABLE;
         SQLiteDatabase db = this.getWritableDatabase();
@@ -139,7 +135,6 @@ public class DBHandler extends SQLiteOpenHelper {
                 product.setName(cursor.getString(1));
                 product.setBarcode(cursor.getString(2));
                 product.setBrand(cursor.getString(3));
-
                 productlist.add(product);
 
             } while (cursor.moveToNext());
@@ -147,7 +142,6 @@ public class DBHandler extends SQLiteOpenHelper {
         }
         return productlist;
     }
-
 
     public Product getProduct(String barcode) {
 
@@ -165,7 +159,4 @@ public class DBHandler extends SQLiteOpenHelper {
         }
 
     }
-
-
-
 }

@@ -21,12 +21,15 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.method.KeyListener;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,29 +42,19 @@ import com.google.zxing.integration.android.IntentResult;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements KeyListener {
 
     SharedPreferences historyshared ;
     ArrayList < String > historyitems = new ArrayList <String> ();
+    ArrayList <String> typedbarcode = new ArrayList<>();
 
+    String AndroidID;
+    DBChecker check = new DBChecker();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        DBChecker check = new DBChecker();
-
-        //Requests permissions to use camera for new versions of android
-        int MY_PERMISSION_REQUEST_CAMERA = 0;
-        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.CAMERA)) {
-                initiateintegrator();
-            } else {
-                ActivityCompat.requestPermissions(MainActivity.this, new String[] {
-                        Manifest.permission.CAMERA
-                }, MY_PERMISSION_REQUEST_CAMERA);
-            }
-        }
 
         // On Create
         super.onCreate(savedInstanceState);
@@ -76,9 +69,38 @@ public class MainActivity extends AppCompatActivity {
 
         historyshared = getSharedPreferences("Historyshared", MainActivity.MODE_PRIVATE); //Sets shared preferences
 
-        retreivevalues(); //Retrieve Preference Values
+        //retreivevalues(); //Retrieve Preference Values
+
+        String android_id = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
 
 
+
+
+        UUID uniqueId = UUID.randomUUID();
+        Log.d("UUID: " , uniqueId.toString());
+        AndroidID = android_id;
+
+
+    }
+
+
+    public boolean requestpermission() { //Request Permission to use camera when contextual
+
+        int MY_PERMISSION_REQUEST_CAMERA = 0;
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.CAMERA)) {
+                initiateintegrator();
+                return false;
+            } else {
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]
+
+                        {
+
+                        Manifest.permission.CAMERA
+                }, MY_PERMISSION_REQUEST_CAMERA);
+            }
+        }
+        return true;
     }
 
     @Override
@@ -132,11 +154,12 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+
         //Sets barcode result and stores it into a string
         String barcode = result.getContents();
-
         //sends barcode to button for when pressed
         assignbuttons(barcode);
+
     }
 
 
@@ -145,10 +168,8 @@ public class MainActivity extends AppCompatActivity {
 
         //Gained from physical barcode
         final EditText PhysicalBarcode = (EditText) findViewById(R.id.editphystxt);
-
         //Stores product name
         final TextView physicalText = (TextView) findViewById(R.id.physicalscan);
-
         //Init DBase
         final DBHandler db = new DBHandler(this);
 
@@ -160,8 +181,12 @@ public class MainActivity extends AppCompatActivity {
                     Product product = db.getProduct(Str);
                     physicalText.setText(product.getName());
                     PhysicalBarcode.setText("");
-                }
 
+                    Intent intent = new Intent(MainActivity.this, ProductScan.class);
+                    intent.putExtra("Barcode", Str);
+                    startActivity(intent);
+
+                }
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
@@ -181,6 +206,7 @@ public class MainActivity extends AppCompatActivity {
         Button scannedbc = (Button) findViewById(R.id.btnProdScan); //The same ^
         Button button = (Button) findViewById(R.id.clear); //Clear barcode scans, prevents searching
         Button debugTest = (Button) findViewById(R.id.btnDebug); //Debug button
+        Button login = (Button) findViewById(R.id.btnlogin);
 
         final String bc = barcode;
         final String searchedbarcode = barcode;
@@ -264,18 +290,36 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View V) {
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
     }
 
     public void initiateintegrator() {
 
-        //Configure ZXing embedded
-        Log.d("i", "Button Pressed");
-        IntentIntegrator integrator = new IntentIntegrator(this);
-        integrator.setBarcodeImageEnabled(true);
-        integrator.setPrompt("Scan the barcode on the tyre");
+        if (requestpermission() == false) {
+            requestpermission();
+        }
 
-        //Initiate Scanner
-        integrator.initiateScan();
+        else {
+            //Configure ZXing embedded
+            Log.d("i", "Button Pressed");
+            IntentIntegrator integrator = new IntentIntegrator(this);
+            integrator.setBarcodeImageEnabled(true);
+            integrator.setPrompt("Scan the barcode on the tyre");
+
+            //Initiate Scanner
+            integrator.initiateScan();
+        }
+
+
     }
 
     @Override
@@ -298,6 +342,69 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         outState.putStringArrayList("History", historyitems);
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public int getInputType() {
+
+        return 0;
+    }
+
+    @Override
+    public boolean onKeyDown(View view, Editable editable, int i, KeyEvent keyEvent) {
+
+        Log.d("Keys", typedbarcode.toString());
+
+
+        switch (i) {
+            case KeyEvent.KEYCODE_0:
+                typedbarcode.add("0");
+                return true;
+            case KeyEvent.KEYCODE_1:
+                typedbarcode.add("1");
+                return true;
+            case KeyEvent.KEYCODE_2:
+                typedbarcode.add("2");
+                return true;
+            case KeyEvent.KEYCODE_3:
+                typedbarcode.add("3");
+                return true;
+            case KeyEvent.KEYCODE_4:
+                typedbarcode.add("4");
+                return true;
+            case KeyEvent.KEYCODE_5:
+                typedbarcode.add("5");
+                return true;
+            case KeyEvent.KEYCODE_6:
+                typedbarcode.add("6");
+                return true;
+            case KeyEvent.KEYCODE_7:
+                typedbarcode.add("7");
+                return true;
+            case KeyEvent.KEYCODE_8:
+                typedbarcode.add("8");
+                return true;
+            case KeyEvent.KEYCODE_9:
+                typedbarcode.add("9");
+                return true;
+            default:
+                return super.onKeyUp(i, keyEvent);
+        }
+    }
+
+    @Override
+    public boolean onKeyUp(View view, Editable editable, int i, KeyEvent keyEvent) {
+        return false;
+    }
+
+    @Override
+    public boolean onKeyOther(View view, Editable editable, KeyEvent keyEvent) {
+        return false;
+    }
+
+    @Override
+    public void clearMetaKeyState(View view, Editable editable, int i) {
+
     }
 }
 
