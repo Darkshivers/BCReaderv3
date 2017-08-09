@@ -18,19 +18,23 @@
         <uses-feature android:name="android.hardware.camera" />
         <uses-feature android:name="android.hardware.camera.autofocus" />
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+        </activity>
+
+        <activity android:name=".MainActivity">
+
         </activity>
         <activity android:name=".historyactivity" />
         <activity android:name=".ScannedProduct"></activity>
         <activity
             android:name=".ProductScan"
             android:theme="@style/Theme.AppCompat.Light.Dialog.MinWidth"></activity>
-        <activity android:name=".LoginActivity"></activity>
     </application>
 
 </manifest>

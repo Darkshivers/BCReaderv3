@@ -14,8 +14,8 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_width="354dp"
+        android:layout_height="156dp"
 
         android:adjustViewBounds="false"
         android:cropToPadding="false"
@@ -23,7 +23,8 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:srcCompat="@drawable/logo"
-        tools:layout_editor_absoluteY="2dp" />
+        tools:layout_editor_absoluteY="46dp"
+        app:layout_constraintHorizontal_bias="0.0" />
 
     <Button
         android:id="@+id/barcode"
@@ -178,15 +179,22 @@
         app:layout_constraintGuide_begin="20dp"
         android:orientation="horizontal" />
 
-    <Button
-        android:id="@+id/btnlogin"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/tvUsername"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="86dp"
-        android:layout_marginTop="20dp"
-        android:text="Button"
-        app:layout_constraintLeft_toRightOf="@+id/clear"
-        app:layout_constraintTop_toBottomOf="@+id/btnProdScan" />
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp"
+        android:layout_marginTop="8dp"
+        android:text="TextView"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.966" />
 
 
 </android.support.constraint.ConstraintLayout>

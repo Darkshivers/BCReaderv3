@@ -14,6 +14,7 @@ limitations under the License.*/
 package com.example.levinm.bcreaderv3;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,15 +22,12 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.method.KeyListener;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -42,16 +40,15 @@ import com.google.zxing.integration.android.IntentResult;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity implements KeyListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     SharedPreferences historyshared ;
     ArrayList < String > historyitems = new ArrayList <String> ();
-    ArrayList <String> typedbarcode = new ArrayList<>();
+    TextView username;
+    String Username;
 
-    String AndroidID;
-    DBChecker check = new DBChecker();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,28 +58,20 @@ public class MainActivity extends AppCompatActivity implements KeyListener {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
 
-        check.doesDBExist(this, "csvfile.csv"); //Check Database Exists and create Products table
-
         assignbuttons(""); //Calls Buttons method
-
         textchangeupdate(); //Call Text change method
+
+        username = (TextView) findViewById(R.id.tvUsername);
+
 
         historyshared = getSharedPreferences("Historyshared", MainActivity.MODE_PRIVATE); //Sets shared preferences
 
+        getStrings("AndroidID","");
+        getStrings("Username","");
+
         //retreivevalues(); //Retrieve Preference Values
 
-        String android_id = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
-
-
-
-
-        UUID uniqueId = UUID.randomUUID();
-        Log.d("UUID: " , uniqueId.toString());
-        AndroidID = android_id;
-
-
     }
-
 
     public boolean requestpermission() { //Request Permission to use camera when contextual
 
@@ -103,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements KeyListener {
         return true;
     }
 
+
     @Override
     //Keeps hold of data when application is updated
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -122,9 +112,12 @@ public class MainActivity extends AppCompatActivity implements KeyListener {
     }
 
     //Recieves scanned barcodes from saved preferences
-    private void retreivevalues() {
-        Set < String > set = historyshared.getStringSet("History Items", null);
-        historyitems.addAll(set);
+    public void getStrings(String key, String value){
+        SharedPreferences sp = getSharedPreferences("user_preferences", Activity.MODE_PRIVATE);
+        String savedValue = sp.getString(key, value);
+        Log.d("MainResult", "Result = " + savedValue);
+        username.setText("Hello! " + savedValue);
+        Username = savedValue;
     }
 
     @Override
@@ -162,7 +155,6 @@ public class MainActivity extends AppCompatActivity implements KeyListener {
 
     }
 
-
     //Check text box for text updates reference DB
     public void textchangeupdate() {
 
@@ -175,6 +167,11 @@ public class MainActivity extends AppCompatActivity implements KeyListener {
 
         //update text with barcode name
         TextWatcher inputTextWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
             public void afterTextChanged(Editable s) {
                 String Str = PhysicalBarcode.getText().toString();
                 if (Str.length() >= 13) {
@@ -185,11 +182,8 @@ public class MainActivity extends AppCompatActivity implements KeyListener {
                     Intent intent = new Intent(MainActivity.this, ProductScan.class);
                     intent.putExtra("Barcode", Str);
                     startActivity(intent);
-
                 }
             }
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
         };
 
         //Assigns text listener to EditText
@@ -206,7 +200,6 @@ public class MainActivity extends AppCompatActivity implements KeyListener {
         Button scannedbc = (Button) findViewById(R.id.btnProdScan); //The same ^
         Button button = (Button) findViewById(R.id.clear); //Clear barcode scans, prevents searching
         Button debugTest = (Button) findViewById(R.id.btnDebug); //Debug button
-        Button login = (Button) findViewById(R.id.btnlogin);
 
         final String bc = barcode;
         final String searchedbarcode = barcode;
@@ -291,15 +284,6 @@ public class MainActivity extends AppCompatActivity implements KeyListener {
             }
         });
 
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View V) {
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
-            }
-        });
-
-
     }
 
     public void initiateintegrator() {
@@ -314,12 +298,9 @@ public class MainActivity extends AppCompatActivity implements KeyListener {
             IntentIntegrator integrator = new IntentIntegrator(this);
             integrator.setBarcodeImageEnabled(true);
             integrator.setPrompt("Scan the barcode on the tyre");
-
             //Initiate Scanner
             integrator.initiateScan();
         }
-
-
     }
 
     @Override
@@ -328,13 +309,13 @@ public class MainActivity extends AppCompatActivity implements KeyListener {
 
         //USB plugged
         if (newConfig.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO) {
-            Toast.makeText(this, "Barcode Scanner detected.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Barcode Scanner detected. Virtual Keyboard Disabled", Toast.LENGTH_LONG).show();
 
 
         }
         //USB Unplugged
         if (newConfig.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_YES) {
-            Toast.makeText(this, "Barcode Scanner Removed.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Barcode Scanner Removed. Virtual Keyboard Enabled", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -345,65 +326,7 @@ public class MainActivity extends AppCompatActivity implements KeyListener {
     }
 
     @Override
-    public int getInputType() {
-
-        return 0;
-    }
-
-    @Override
-    public boolean onKeyDown(View view, Editable editable, int i, KeyEvent keyEvent) {
-
-        Log.d("Keys", typedbarcode.toString());
-
-
-        switch (i) {
-            case KeyEvent.KEYCODE_0:
-                typedbarcode.add("0");
-                return true;
-            case KeyEvent.KEYCODE_1:
-                typedbarcode.add("1");
-                return true;
-            case KeyEvent.KEYCODE_2:
-                typedbarcode.add("2");
-                return true;
-            case KeyEvent.KEYCODE_3:
-                typedbarcode.add("3");
-                return true;
-            case KeyEvent.KEYCODE_4:
-                typedbarcode.add("4");
-                return true;
-            case KeyEvent.KEYCODE_5:
-                typedbarcode.add("5");
-                return true;
-            case KeyEvent.KEYCODE_6:
-                typedbarcode.add("6");
-                return true;
-            case KeyEvent.KEYCODE_7:
-                typedbarcode.add("7");
-                return true;
-            case KeyEvent.KEYCODE_8:
-                typedbarcode.add("8");
-                return true;
-            case KeyEvent.KEYCODE_9:
-                typedbarcode.add("9");
-                return true;
-            default:
-                return super.onKeyUp(i, keyEvent);
-        }
-    }
-
-    @Override
-    public boolean onKeyUp(View view, Editable editable, int i, KeyEvent keyEvent) {
-        return false;
-    }
-
-    @Override
-    public boolean onKeyOther(View view, Editable editable, KeyEvent keyEvent) {
-        return false;
-    }
-
-    @Override
-    public void clearMetaKeyState(View view, Editable editable, int i) {
+    public void onClick(View view) {
 
     }
 }
