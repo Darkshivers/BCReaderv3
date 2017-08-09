@@ -1,9 +1,12 @@
 package com.example.levinm.bcreaderv3;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,31 +18,36 @@ import java.util.List;
 
 public class historyactivity extends AppCompatActivity {
 
+    String savedValue;
+    int sharedpreferencesamount = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_historyactivity);
-
-
         final ListView listview = (ListView) findViewById(R.id.lvhistory);
 
-        MainActivity mainActivity;
-        mainActivity = new MainActivity();
-        Intent i = getIntent();
-        final ArrayList<String> list = i.getStringArrayListExtra("key");
-        list.add(String.valueOf(mainActivity.historyitems));
+        final ArrayList<String> list = new ArrayList<>();
+        SharedPreferences sp = getSharedPreferences("history", Activity.MODE_PRIVATE);
 
+        sharedpreferencesamount = sp.getAll().size();
+        DBHandler db = new DBHandler(this);
 
-//        for (int i = 0; i < values.length; ++i) {
-//            list.add(values[i]);
-//        }
+        for (int i=0; i<sharedpreferencesamount; i++){
+
+            Log.d("List", "Amount " + i);
+            savedValue = sp.getString(String.valueOf(i), null);
+
+            Product product = db.getProduct(savedValue);
+
+            list.add(product.getName());
+
+        }
 
         final StableArrayAdapter adapter = new StableArrayAdapter(this,
                 android.R.layout.simple_list_item_1, list);
         listview.setAdapter(adapter);
-
-
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 

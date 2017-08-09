@@ -38,8 +38,6 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -47,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ArrayList < String > historyitems = new ArrayList <String> ();
     TextView username;
     String Username;
-
+    int amountstored = 0;
 
 
     @Override
@@ -101,14 +99,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //Saves scanned bar codes
-    private void saveData() {
+    private void saveData(String value) {
 
-        SharedPreferences.Editor edit = historyshared.edit();
-        Set < String > set = new HashSet < > ();
-        set.addAll(historyitems);
-        edit.putStringSet("History Items", set);
-        edit.apply();
-        Log.d("Stored Preferences set", "" + set);
+        SharedPreferences sp = getSharedPreferences("history", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        amountstored = sp.getAll().size();
+        String amountstoredString = Integer.toString(amountstored++);
+        editor.putString(amountstoredString, value);
+        Log.d("Preferences Saved", value);
+        editor.commit();
+
     }
 
     //Recieves scanned barcodes from saved preferences
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 DigitalBarcoderesults.setText(product.getName());
 
                 historyitems.add(barcode);
-                saveData();
+                saveData(barcode);
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -269,9 +269,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         history.setOnClickListener(new View.OnClickListener() {
             public void onClick(View V) {
-
                 Intent intent = new Intent(MainActivity.this, historyactivity.class);
-                intent.putStringArrayListExtra("key", historyitems);
                 startActivity(intent);
             }
         });
