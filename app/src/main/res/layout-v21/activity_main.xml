@@ -14,8 +14,8 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="354dp"
-        android:layout_height="156dp"
+        android:layout_width="356dp"
+        android:layout_height="201dp"
 
         android:adjustViewBounds="false"
         android:cropToPadding="false"
@@ -23,8 +23,9 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:srcCompat="@drawable/logo"
-        tools:layout_editor_absoluteY="46dp"
-        app:layout_constraintHorizontal_bias="0.0" />
+        tools:layout_editor_absoluteY="1dp"
+        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_marginTop="8dp" />
 
     <Button
         android:id="@+id/barcode"
@@ -148,7 +149,7 @@
     <Button
         android:id="@+id/clear"
         style="@android:style/Widget.Material.Button.Colored"
-        android:layout_width="129dp"
+        android:layout_width="match_parent"
         android:layout_height="49dp"
 
         android:layout_marginLeft="20dp"
@@ -163,14 +164,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnHistory" />
-
-    <Button
-        android:id="@+id/btnDebug"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="inserttest"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="2dp" />
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"

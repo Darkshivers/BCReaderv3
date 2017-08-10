@@ -41,11 +41,11 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    SharedPreferences historyshared ;
     ArrayList < String > historyitems = new ArrayList <String> ();
-    TextView username;
-    String Username;
+    TextView username, physicalbc, camerabc;
+    String Username, storedbarcode;
     int amountstored = 0;
+    Button search, history, scannedbc, button, debugTest, barcode;
 
 
     @Override
@@ -56,19 +56,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
 
-        assignbuttons(""); //Calls Buttons method
         textchangeupdate(); //Call Text change method
 
         username = (TextView) findViewById(R.id.tvUsername);
 
+        search = (Button) findViewById(R.id.buttonsearch); // Search the internet
+        search.setOnClickListener(this);
 
-        historyshared = getSharedPreferences("Historyshared", MainActivity.MODE_PRIVATE); //Sets shared preferences
+        history = (Button) findViewById(R.id.btnHistory); //Check barcode scan history
+        history.setOnClickListener(this);
 
-        getStrings("AndroidID","");
-        getStrings("Username","");
+        scannedbc = (Button) findViewById(R.id.btnProdScan); //The same ^
+        scannedbc.setOnClickListener(this);
 
-        //retreivevalues(); //Retrieve Preference Values
+        button = (Button) findViewById(R.id.clear); //Clear barcode scans, prevents searching
+        button.setOnClickListener(this);
 
+        barcode = (Button) findViewById(R.id.barcode);
+        barcode.setOnClickListener(this);
+
+        physicalbc = (TextView) findViewById(R.id.physicalscan);
+        camerabc = (TextView) findViewById(R.id.BarcodeResult);
+
+        getStrings("Username", null);
     }
 
     public boolean requestpermission() { //Request Permission to use camera when contextual
@@ -82,7 +92,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]
 
                         {
-
                         Manifest.permission.CAMERA
                 }, MY_PERMISSION_REQUEST_CAMERA);
             }
@@ -106,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         amountstored = sp.getAll().size();
         String amountstoredString = Integer.toString(amountstored++);
         editor.putString(amountstoredString, value);
+        storedbarcode = value;
         Log.d("Preferences Saved", value);
         editor.commit();
 
@@ -147,12 +157,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
-
-        //Sets barcode result and stores it into a string
-        String barcode = result.getContents();
-        //sends barcode to button for when pressed
-        assignbuttons(barcode);
-
     }
 
     //Check text box for text updates reference DB
@@ -190,106 +194,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         PhysicalBarcode.addTextChangedListener(inputTextWatcher);
     }
 
-    //Assign buttons to switches
-    public void assignbuttons(final String barcode) {
-
-        //Button inits
-        final TextView BarcodeText = (TextView) findViewById(R.id.BarcodeResult); //    Textview for barcode
-        Button search = (Button) findViewById(R.id.buttonsearch); // Search the internet
-        Button history = (Button) findViewById(R.id.btnHistory); //Check barcode scan history
-        Button scannedbc = (Button) findViewById(R.id.btnProdScan); //The same ^
-        Button button = (Button) findViewById(R.id.clear); //Clear barcode scans, prevents searching
-        Button debugTest = (Button) findViewById(R.id.btnDebug); //Debug button
-
-        final String bc = barcode;
-        final String searchedbarcode = barcode;
-
-        debugTest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                TextView DigitalBarcoderesults = (TextView) findViewById(R.id.BarcodeResult);
-                DBHandler db = new DBHandler(MainActivity.this);
-
-                if (barcode == "") { //Avon
-                    Product product = db.getProduct("29142485506");
-                    DigitalBarcoderesults.setText(product.getName());
-                    assignbuttons("29142485506");
-                    return;
-
-                }
-
-                if (barcode == "29142485506") { //  Davanti
-                    Product product = db.getProduct("5060408160299");
-                    DigitalBarcoderesults.setText(product.getName());
-                    assignbuttons("5060408160299");
-                    return;
-
-                }
-
-                if (barcode == "5060408160299") { // Evergreen
-                    Product product = db.getProduct("69222504404882");
-                    DigitalBarcoderesults.setText(product.getName());
-                    assignbuttons(null);
-                    return;
-                }
-            }
-        });
-
-
-        Button clear = (Button) findViewById(R.id.barcode);
-        clear.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                initiateintegrator();
-
-            }
-        });
-
-
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                BarcodeText.setText("");
-                assignbuttons("");
-            }
-        });
-
-        search.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View V) {
-
-                if (searchedbarcode != ("")) {
-                    Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-                    String keyword = searchedbarcode;
-                    intent.putExtra(SearchManager.QUERY, keyword);
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(MainActivity.this, "No Barcode Scanned", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
-        history.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View V) {
-                Intent intent = new Intent(MainActivity.this, historyactivity.class);
-                startActivity(intent);
-            }
-        });
-
-        scannedbc.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View V) {
-                Intent intent = new Intent(MainActivity.this, ProductScan.class);
-                intent.putExtra("Barcode", bc);
-                startActivity(intent);
-            }
-        });
-
-    }
-
     public void initiateintegrator() {
 
         if (requestpermission() == false) {
             requestpermission();
         }
-
         else {
             //Configure ZXing embedded
             Log.d("i", "Button Pressed");
@@ -308,8 +217,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //USB plugged
         if (newConfig.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO) {
             Toast.makeText(this, "Barcode Scanner detected. Virtual Keyboard Disabled", Toast.LENGTH_LONG).show();
-
-
         }
         //USB Unplugged
         if (newConfig.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_YES) {
@@ -326,6 +233,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
 
+        Intent intent;
+
+        switch (view.getId()) {
+
+            case R.id.buttonsearch:
+                if (storedbarcode != ("")) {
+                    intent = new Intent(Intent.ACTION_WEB_SEARCH);
+                    intent.putExtra(SearchManager.QUERY, storedbarcode);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(MainActivity.this, "No Barcode Scanned", Toast.LENGTH_LONG).show();
+                }
+                break;
+
+            case R.id.btnHistory:
+                intent = new Intent(MainActivity.this, historyactivity.class);
+                startActivity(intent);
+                break;
+
+
+            case R.id.btnProdScan:
+                intent = new Intent(MainActivity.this, ProductScan.class);
+                intent.putExtra("Barcode", storedbarcode);
+                startActivity(intent);
+                break;
+
+            case R.id.clear:
+                physicalbc.setText("");
+                camerabc.setText("");
+                break;
+
+            case R.id.barcode:
+                initiateintegrator();
+                break;
+
+        }
     }
 }
 
