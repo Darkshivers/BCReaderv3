@@ -1,8 +1,10 @@
 package com.example.levinm.bcreaderv3;
 
-import android.content.Intent;
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,26 +14,22 @@ public class ProductScan extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_scan);
-
-        Bundle extras = getIntent().getExtras();
-        String bc = extras.getString("Barcode");
         DBHandler dbhandler = new DBHandler(this);
 
-        if (bc.length() <= 1) {
-            Intent intent = new Intent(ProductScan.this, MainActivity.class);
-            startActivity(intent);
-            return;
-        }
 
-        else {
-            Product product =  dbhandler.getProduct(bc);
-            TextView name = (TextView) findViewById(R.id.tvprodname);
+        SharedPreferences sp = getSharedPreferences("history", Activity.MODE_PRIVATE);
+        int amount = sp.getAll().size() - 1;
+        String StrAmount = Integer.toString(amount);
+        Log.d("ScannedAmount:", StrAmount);
 
-            name.setText(product.getName());
-            checkbrand(product.getBrand());
-        }
+        String bc = sp.getString(StrAmount,"");
+        Log.d("ProductScanCheck: ", bc);
 
+        Product product =  dbhandler.getProduct(bc);
+        TextView name = (TextView) findViewById(R.id.tvprodname);
 
+        name.setText(product.getName());
+        checkbrand(product.getBrand());
 
     }
 

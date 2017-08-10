@@ -62,7 +62,6 @@ public class DBHandler extends SQLiteOpenHelper {
                 KEY_price + " TEXT";
 
         db.execSQL(CREATE_TABLE_PRODUCTS); //Exec products query
-
     }
 
     @Override
@@ -150,13 +149,13 @@ public class DBHandler extends SQLiteOpenHelper {
                 KEY_Product, Key_Brand}, Key_ProductBarcode + "=?", new String[]{barcode}, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
-        Product contact = new Product(cursor.getString(0), cursor.getString(2), cursor.getString(1), cursor.getString(3));
+            Product contact = new Product(cursor.getString(0), cursor.getString(2), cursor.getString(1), cursor.getString(3));
         if (contact == null){
+            cursor.close();
             return null;
         }
         else {
             return contact;
         }
-
     }
 }

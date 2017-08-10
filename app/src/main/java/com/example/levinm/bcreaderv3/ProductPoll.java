@@ -34,10 +34,7 @@ public class ProductPoll {
             String log = "id: " + product1.getId() + ", Name: " + product1.getName() + " , Barcode: " + product1.getBarCode() + ", Brand: " + product1.getBrand();
             Log.d("Product::", log);
         }
-
-
     }
-
 
 }
 

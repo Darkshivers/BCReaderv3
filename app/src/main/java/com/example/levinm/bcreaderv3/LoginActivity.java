@@ -16,15 +16,11 @@ import android.widget.TextView;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
-    String defaultusername = "Matthew";
-    String defaultpassword = "password";
-    EditText Username;
-    EditText Password;
+    String defaultusername = "Matthew", defaultpassword = "password", android_id;
+    EditText Username, Password;
     TextView response;
     Button submit;
     DBChecker check = new DBChecker();
-
-    String android_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +37,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         Log.d("DeviceID", android_id);
         getStrings("Username",""); //Check to see if the device has been assigned to an account
-    };
+    }
 
     public void SaveString(String key, String value){
 
@@ -53,11 +49,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
-
     public void getStrings(String key, String value){
+
         SharedPreferences sp = getSharedPreferences("user_preferences", Activity.MODE_PRIVATE);
-
-
         String savedValue = sp.getString(key, value);
 
         if (savedValue.length() <= 1){
@@ -69,7 +63,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
         }
-
     }
 
     public boolean checkcontents() {
@@ -86,7 +79,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 
     }
-
 
     public void checkDetails() {
 

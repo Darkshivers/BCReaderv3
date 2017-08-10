@@ -35,14 +35,10 @@ public class historyactivity extends AppCompatActivity {
         DBHandler db = new DBHandler(this);
 
         for (int i=0; i<sharedpreferencesamount; i++){
-
             Log.d("List", "Amount " + i);
             savedValue = sp.getString(String.valueOf(i), null);
-
             Product product = db.getProduct(savedValue);
-
             list.add(product.getName());
-
         }
 
         final StableArrayAdapter adapter = new StableArrayAdapter(this,
@@ -91,7 +87,6 @@ public class historyactivity extends AppCompatActivity {
         public boolean hasStableIds() {
             return true;
         }
-
     }
 
 }

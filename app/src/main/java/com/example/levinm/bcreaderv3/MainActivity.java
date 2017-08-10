@@ -37,16 +37,13 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-import java.util.ArrayList;
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    ArrayList < String > historyitems = new ArrayList <String> ();
     TextView username, physicalbc, camerabc;
     String Username, storedbarcode;
     int amountstored = 0;
-    Button search, history, scannedbc, button, debugTest, barcode;
-
+    Button search, history, scannedbc, button, barcode;
+    DBHandler db = new DBHandler(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,21 +87,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return false;
             } else {
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]
-
                         {
                         Manifest.permission.CAMERA
                 }, MY_PERMISSION_REQUEST_CAMERA);
             }
         }
         return true;
-    }
-
-
-    @Override
-    //Keeps hold of data when application is updated
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        historyitems = savedInstanceState.getStringArrayList("History");
-        super.onRestoreInstanceState(savedInstanceState);
     }
 
     //Saves scanned bar codes
@@ -118,7 +106,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         storedbarcode = value;
         Log.d("Preferences Saved", value);
         editor.commit();
-
     }
 
     //Recieves scanned barcodes from saved preferences
@@ -144,15 +131,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                 TextView DigitalBarcoderesults = (TextView) findViewById(R.id.BarcodeResult);
 
-                //Being DB Conn
-                DBHandler db = new DBHandler(MainActivity.this);
-
                 String barcode = result.getContents();
                 Product product = db.getProduct(barcode);
                 DigitalBarcoderesults.setText(product.getName());
-
-                historyitems.add(barcode);
                 saveData(barcode);
+
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -161,14 +144,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //Check text box for text updates reference DB
     public void textchangeupdate() {
-
         //Gained from physical barcode
         final EditText PhysicalBarcode = (EditText) findViewById(R.id.editphystxt);
-        //Stores product name
-        final TextView physicalText = (TextView) findViewById(R.id.physicalscan);
-        //Init DBase
-        final DBHandler db = new DBHandler(this);
-
         //update text with barcode name
         TextWatcher inputTextWatcher = new TextWatcher() {
             @Override
@@ -180,16 +157,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String Str = PhysicalBarcode.getText().toString();
                 if (Str.length() >= 13) {
                     Product product = db.getProduct(Str);
-                    physicalText.setText(product.getName());
+                    physicalbc.setText(product.getName());
                     PhysicalBarcode.setText("");
-
                     Intent intent = new Intent(MainActivity.this, ProductScan.class);
                     intent.putExtra("Barcode", Str);
                     startActivity(intent);
                 }
             }
         };
-
         //Assigns text listener to EditText
         PhysicalBarcode.addTextChangedListener(inputTextWatcher);
     }
@@ -225,12 +200,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putStringArrayList("History", historyitems);
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
     public void onClick(View view) {
 
         Intent intent;
@@ -252,12 +221,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
                 break;
 
-
             case R.id.btnProdScan:
-                intent = new Intent(MainActivity.this, ProductScan.class);
-                intent.putExtra("Barcode", storedbarcode);
-                startActivity(intent);
-                break;
+                if (storedbarcode == null){
+                    Toast.makeText(this, "No Product Scanned", Toast.LENGTH_LONG).show();
+                    break;
+                }
+                else {
+                    intent = new Intent(MainActivity.this, ProductScan.class);
+                    startActivity(intent);
+                    break;
+                }
 
             case R.id.clear:
                 physicalbc.setText("");
@@ -267,11 +240,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.barcode:
                 initiateintegrator();
                 break;
-
         }
     }
 }
-
-
-
-
