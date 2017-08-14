@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     int amountstored = 0;
     Button search, history, scannedbc, button, barcode;
     DBHandler db = new DBHandler(this);
+    ProductPoll query = new ProductPoll();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         button = (Button) findViewById(R.id.clear); //Clear barcode scans, prevents searching
         button.setOnClickListener(this);
 
-        barcode = (Button) findViewById(R.id.barcode);
+        barcode = (Button) findViewById(R.id.barcode); //
         barcode.setOnClickListener(this);
 
         physicalbc = (TextView) findViewById(R.id.physicalscan);
@@ -97,7 +98,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //Saves scanned bar codes
     private void saveData(String value) {
-
         SharedPreferences sp = getSharedPreferences("history", Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         amountstored = sp.getAll().size();
@@ -131,10 +131,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                 TextView DigitalBarcoderesults = (TextView) findViewById(R.id.BarcodeResult);
 
-                String barcode = result.getContents();
-                Product product = db.getProduct(barcode);
-                DigitalBarcoderesults.setText(product.getName());
-                saveData(barcode);
+//                String barcode = result.getContents();
+//                Product product = db.getProduct(barcode, this);
+//                DigitalBarcoderesults.setText(product.getName());
+
+                storedbarcode = result.getContents();
+                DigitalBarcoderesults.setText(query.getProductName(storedbarcode, this));
+
+                saveData(storedbarcode);
 
             }
         } else {
@@ -156,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void afterTextChanged(Editable s) {
                 String Str = PhysicalBarcode.getText().toString();
                 if (Str.length() >= 13) {
-                    Product product = db.getProduct(Str);
+                    Product product = db.getProduct(Str, MainActivity.this);
                     physicalbc.setText(product.getName());
                     PhysicalBarcode.setText("");
                     Intent intent = new Intent(MainActivity.this, ProductScan.class);

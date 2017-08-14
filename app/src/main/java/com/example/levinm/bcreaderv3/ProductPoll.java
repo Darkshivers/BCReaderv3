@@ -13,15 +13,12 @@ public class ProductPoll {
 
     public ProductPoll(){}
 
-
     //When called inserts CSV file into the SQLite database
     public void insert(Context context, String csv)  {
-
         DBHandler db = new DBHandler(context);
         Log.d("insert: ", "Inserting products... ");
         db.insert(context, csv);
         db.close();
-
     }
 
     //When called outputs all products into log
@@ -35,9 +32,11 @@ public class ProductPoll {
             Log.d("Product::", log);
         }
     }
-
+    public String getProductName(String barcode, Context context) {
+        DBHandler db = new DBHandler(context);
+        Product product = db.getProduct(barcode, context);
+        return product.getName();
+    }
 }
-
-
 
 

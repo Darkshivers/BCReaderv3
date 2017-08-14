@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,6 +36,8 @@ public class DBHandler extends SQLiteOpenHelper {
     public static final String KEY_Product = "ProductName";
     public static final String Key_ProductBarcode = "barcode";
     public static final String Key_Brand = "brand";
+
+    public Product contact = new Product();
 
     //Price table
 
@@ -142,19 +145,20 @@ public class DBHandler extends SQLiteOpenHelper {
         return productlist;
     }
 
-    public Product getProduct(String barcode) {
-
+    public Product getProduct(String barcode, Context context) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE, new String[]{KEY_ID, Key_ProductBarcode,
                 KEY_Product, Key_Brand}, Key_ProductBarcode + "=?", new String[]{barcode}, null, null, null, null);
-        if (cursor != null)
-            cursor.moveToFirst();
-            Product contact = new Product(cursor.getString(0), cursor.getString(2), cursor.getString(1), cursor.getString(3));
+        if (cursor != null && cursor.moveToFirst())
+            contact = new Product(cursor.getString(0), cursor.getString(2), cursor.getString(1), cursor.getString(3));
+            db.close();
         if (contact == null){
-            cursor.close();
-            return null;
+            return contact;
         }
         else {
+            Log.d("Database ", "Database Return Null Value");
+            Toast.makeText(context, "No Product Scanned", Toast.LENGTH_LONG).show();
+            cursor.close();
             return contact;
         }
     }

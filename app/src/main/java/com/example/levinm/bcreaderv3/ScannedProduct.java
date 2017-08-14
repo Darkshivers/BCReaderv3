@@ -26,7 +26,7 @@ public class ScannedProduct extends AppCompatActivity {
         setContentView(R.layout.activity_scanned_product);
 
         String barcode = "5060408160299";
-        Product product =  dbhandler.getProduct(barcode);
+        Product product =  dbhandler.getProduct(barcode, this);
         String prodName = product.getName();
         String prodId = product.getId();
         String prodBrand = product.getBrand();
@@ -34,8 +34,6 @@ public class ScannedProduct extends AppCompatActivity {
         productbrand(product.getBrand());
 
         Log.d("Product::", "ProdName: " + prodName + " Brand: " + prodBrand + " Product ID: " + prodId);
-
-
 
         lvProduct=(ListView) findViewById(R.id.lvProduct);
         lvProduct.setAdapter(new CustomAdapter(this, wheelnamelist, wheelimages));
@@ -60,7 +58,5 @@ public class ScannedProduct extends AppCompatActivity {
             else {
                 Log.d("Update::", "No Conditions Apply " + " Product = " + product);
             }
-
     }
-
 }

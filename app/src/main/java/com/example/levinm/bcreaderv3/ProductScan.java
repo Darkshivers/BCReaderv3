@@ -25,7 +25,7 @@ public class ProductScan extends AppCompatActivity {
         String bc = sp.getString(StrAmount,"");
         Log.d("ProductScanCheck: ", bc);
 
-        Product product =  dbhandler.getProduct(bc);
+        Product product =  dbhandler.getProduct(bc, this);
         TextView name = (TextView) findViewById(R.id.tvprodname);
 
         name.setText(product.getName());

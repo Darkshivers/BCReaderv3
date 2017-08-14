@@ -37,7 +37,7 @@ public class historyactivity extends AppCompatActivity {
         for (int i=0; i<sharedpreferencesamount; i++){
             Log.d("List", "Amount " + i);
             savedValue = sp.getString(String.valueOf(i), null);
-            Product product = db.getProduct(savedValue);
+            Product product = db.getProduct(savedValue, this);
             list.add(product.getName());
         }
 

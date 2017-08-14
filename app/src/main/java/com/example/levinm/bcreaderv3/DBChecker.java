@@ -19,8 +19,6 @@ public class DBChecker {
 
     public void doesDBExist(Context context, String csv) {
 
-
-
         Log.d("Check:", "Checking DB...");
         String db_name = db.DATABASE_NAME;
         File dbFile = context.getDatabasePath(db_name); //Check to see if the Database exists
